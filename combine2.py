@@ -1,5 +1,5 @@
 import os
-from modules.cutVideo import cutVideo
+from modules.cutVideo import cutVideo, cutVideoWithWhiteNoise, cutAudio
 from modules.changeAudioLength import changeAudioLength
 from modules.changeVideoLength import changeVideoLength
 
@@ -614,15 +614,23 @@ overlaps = [
     },
 ]
 
+def getSequenceNo(x):
+    y = 10000
+    y += x
+    return str(y)[1:]
 
-def combine(video, overlaps, projectLocation):
+def combine(video,background, overlaps, projectLocation):
     i = 0
     k = 0
     siz = len(overlaps)
 
     if overlaps[0]["start_time"] != 0:
-        cutVideo(
-            video, 00, overlaps[0]["start_time"], f"{projectLocation}merge/{i}.avi"
+        cutVideoWithWhiteNoise(
+            video, 00, overlaps[0]["start_time"], f"{projectLocation}merge/{getSequenceNo(i)}.avi"
+        )
+
+        cutAudio(
+            background, 00, overlaps[0]["start_time"], f"{projectLocation}background/{getSequenceNo(i)}.avi"
         )
         i += 1
 
@@ -636,12 +644,26 @@ def combine(video, overlaps, projectLocation):
                 f"{projectLocation}videos/{i}.avi",
             )
 
+            cutAudio(
+                background,
+                overlap["start_time"],
+                overlap["end_time"],
+                f"{projectLocation}background/{getSequenceNo}.avi",
+            )
+
         elif overlap["overlap"] == 1:
             cutVideo(
                 video,
                 overlap["start_time"],
                 overlap["end_time"],
                 f"{projectLocation}videos/{i}.avi",
+            )
+
+            cutAudio(
+                background,
+                overlap["start_time"],
+                overlap["end_time"],
+                f"{projectLocation}background/{getSequenceNo}.avi",
             )
 
             changeAudioLength(
@@ -662,15 +684,29 @@ def combine(video, overlaps, projectLocation):
                 overlap["end_time"],
                 f"{projectLocation}videos/temp/{i}.avi",
             )
-            # also change audio length
+            cutAudio(
+                background,
+                overlap["start_time"],
+                overlap["end_time"],
+                f"{projectLocation}background/temp/{i}.avi",
+            )
+
             gap = abs(overlap["audio_duration"] - overlap["required_duration"])
             newGap = gap / 2
             newRequiredDuration = overlap["required_duration"] + newGap
+            
+            #test 
             changeVideoLength(
                 f"{projectLocation}videos/temp/{i}.avi",
+                overlap["required_duration"],
                 newRequiredDuration,
-                overlap["audio_duration"],
                 f"{projectLocation}videos/{i}.avi",
+            )
+            changeAudioLength(
+                f"{projectLocation}background/temp/{i}.avi",
+                overlap["required_duration"],
+                newRequiredDuration,
+                f"{projectLocation}background/{getSequenceNo(i)}.avi",
             )
             changeAudioLength(
                 f"{projectLocation}audio/{overlap['name']}",
@@ -683,23 +719,29 @@ def combine(video, overlaps, projectLocation):
                 f"{projectLocation}audio/{overlap['name']}",
             )
 
-        command = f"ffmpeg -y -i {projectLocation}videos/{i}.avi -i {projectLocation}audio/{overlap['name']} -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 {projectLocation}merge/{i}.avi"
+        command = f"ffmpeg -y -i {projectLocation}videos/{i}.avi -i {projectLocation}audio/{overlap['name']}  -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -af apad {projectLocation}merge/{getSequenceNo(i)}.avi"
         os.system(command)
         i += 1
 
         if k < siz - 1:
-            cutVideo(
+            cutVideoWithWhiteNoise(
                 video,
                 overlaps[k]["end_time"],
                 overlaps[k + 1]["start_time"],
-                f"{projectLocation}merge/{i}.avi",
+                f"{projectLocation}merge/{getSequenceNo(i)}.avi",
+            )
+            cutVideo(
+                background,
+                overlaps[k]["start_time"],
+                overlaps[k+1]["end_time"],
+                f"{projectLocation}background/{getSequenceNo(i)}.avi",
             )
             i += 1
         k += 1
 
     # write a function to concat
 
-
+#give background stream also
 combine(
     "/home/swarupkharul/Documents/yaksaa/inanutsshell/videoStream.mp4",
     overlaps,
