@@ -18,7 +18,7 @@ def cutVideoWithWhiteNoise(video, startingTime, endingTime, fileName):
         print("Error: starttingTime is greater than ending time! ")
         return
 
-    command = f"ffmpeg -y -f lavfi -i anullsrc -i {video} -codec:v libx264 -crf 18 -preset superfast -ss {startingTime} -to {endingTime} -an {fileName}"
+    command = f"ffmpeg -y -f lavfi -i anullsrc=r=24000:cl=mono -i {video} -codec:v libx264 -crf 18 -preset superfast -ss {startingTime} -to {endingTime} -codec:a aac {fileName}"
     print(command)
     os.system(command)
 

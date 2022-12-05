@@ -626,11 +626,11 @@ def combine(video,background, overlaps, projectLocation):
 
     if overlaps[0]["start_time"] != 0:
         cutVideoWithWhiteNoise(
-            video, 00, overlaps[0]["start_time"], f"{projectLocation}merge/{getSequenceNo(i)}.avi"
+            video, 00, overlaps[0]["start_time"], f"{projectLocation}merge1/x_{getSequenceNo(i)}.avi"
         )
 
         cutAudio(
-            background, 00, overlaps[0]["start_time"], f"{projectLocation}background/{getSequenceNo(i)}.avi"
+            background, 00, overlaps[0]["start_time"], f"{projectLocation}background/x_{getSequenceNo(i)}.avi"
         )
         i += 1
 
@@ -641,14 +641,14 @@ def combine(video,background, overlaps, projectLocation):
                 video,
                 overlap["start_time"],
                 overlap["end_time"],
-                f"{projectLocation}videos/{i}.avi",
+                f"{projectLocation}videos/x_{getSequenceNo(i)}.avi",
             )
 
             cutAudio(
                 background,
                 overlap["start_time"],
                 overlap["end_time"],
-                f"{projectLocation}background/{getSequenceNo}.avi",
+                f"{projectLocation}background/x_{getSequenceNo(i)}.avi",
             )
 
         elif overlap["overlap"] == 1:
@@ -656,14 +656,14 @@ def combine(video,background, overlaps, projectLocation):
                 video,
                 overlap["start_time"],
                 overlap["end_time"],
-                f"{projectLocation}videos/{i}.avi",
+                f"{projectLocation}videos/x_{getSequenceNo(i)}.avi",
             )
 
             cutAudio(
                 background,
                 overlap["start_time"],
                 overlap["end_time"],
-                f"{projectLocation}background/{getSequenceNo}.avi",
+                f"{projectLocation}background/x_{getSequenceNo(i)}.avi",
             )
 
             changeAudioLength(
@@ -682,13 +682,13 @@ def combine(video,background, overlaps, projectLocation):
                 video,
                 overlap["start_time"],
                 overlap["end_time"],
-                f"{projectLocation}videos/temp/{i}.avi",
+                f"{projectLocation}videos/temp/x_{getSequenceNo(i)}.avi",
             )
             cutAudio(
                 background,
                 overlap["start_time"],
                 overlap["end_time"],
-                f"{projectLocation}background/temp/{i}.avi",
+                f"{projectLocation}background/temp/x_{getSequenceNo(i)}.avi",
             )
 
             gap = abs(overlap["audio_duration"] - overlap["required_duration"])
@@ -697,16 +697,16 @@ def combine(video,background, overlaps, projectLocation):
             
             #test 
             changeVideoLength(
-                f"{projectLocation}videos/temp/{i}.avi",
+                f"{projectLocation}videos/temp/x_{getSequenceNo(i)}.avi",
                 overlap["required_duration"],
                 newRequiredDuration,
-                f"{projectLocation}videos/{i}.avi",
+                f"{projectLocation}videos/x_{getSequenceNo(i)}.avi",
             )
             changeAudioLength(
-                f"{projectLocation}background/temp/{i}.avi",
+                f"{projectLocation}background/temp/x_{getSequenceNo(i)}.avi",
                 overlap["required_duration"],
                 newRequiredDuration,
-                f"{projectLocation}background/{getSequenceNo(i)}.avi",
+                f"{projectLocation}background/x_{getSequenceNo(i)}.avi",
             )
             changeAudioLength(
                 f"{projectLocation}audio/{overlap['name']}",
@@ -719,7 +719,7 @@ def combine(video,background, overlaps, projectLocation):
                 f"{projectLocation}audio/{overlap['name']}",
             )
 
-        command = f"ffmpeg -y -i {projectLocation}videos/{i}.avi -i {projectLocation}audio/{overlap['name']}  -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -af apad {projectLocation}merge/{getSequenceNo(i)}.avi"
+        command = f"ffmpeg -y -i {projectLocation}videos/x_{getSequenceNo(i)}.avi -i {projectLocation}audio/{overlap['name']}  -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -af apad -shortest {projectLocation}merge1/x_{getSequenceNo(i)}.avi"
         os.system(command)
         i += 1
 
@@ -728,22 +728,35 @@ def combine(video,background, overlaps, projectLocation):
                 video,
                 overlaps[k]["end_time"],
                 overlaps[k + 1]["start_time"],
-                f"{projectLocation}merge/{getSequenceNo(i)}.avi",
+                f"{projectLocation}merge1/x_{getSequenceNo(i)}.avi",
             )
-            cutVideo(
+            cutAudio(
                 background,
-                overlaps[k]["start_time"],
-                overlaps[k+1]["end_time"],
-                f"{projectLocation}background/{getSequenceNo(i)}.avi",
+                overlaps[k]["end_time"],
+                overlaps[k+1]["start_time"],
+                f"{projectLocation}background/x_{getSequenceNo(i)}.avi",
             )
             i += 1
         k += 1
 
+    # handle case to add a left over audio
+
     # write a function to concat
+    os.chdir(f"{projectLocation}merge1")
+    os.system("for f in *.avi; do echo \"file '$f'\" >> video.txt; done")
+    os.system("ffmpeg -f concat -i video.txt -c copy a.avi")
+
+    os.chdir(f"{projectLocation}background")
+    os.system("for f in *.avi; do echo \"file '$f'\" >> video.txt; done")
+    os.system("ffmpeg -f concat -i video.txt -c copy a.avi")
+
+    os.system("ffmpeg -i ../merge1/a.avi -i a.avi -filter_complex \"[1]volume=1[aud1]; [0][aud1]amix=2,volume=2\" -c:v copy ../f.avi")
+
 
 #give background stream also
 combine(
-    "/home/swarupkharul/Documents/yaksaa/inanutsshell/videoStream.mp4",
+    "/mnt/c/Users/surya/Desktop/startup/inanutsshell/videoStream.mp4",
+    "/mnt/c/Users/surya/Desktop/startup/inanutsshell/audio_Instruments.wav",
     overlaps,
-    "/home/swarupkharul/Documents/yaksaa/inanutsshell/",
+    "/mnt/c/Users/surya/Desktop/startup/inanutsshell/",
 )
