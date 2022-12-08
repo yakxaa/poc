@@ -19,6 +19,10 @@ if (!fs.existsSync(`${PROJECT_ROOT}/${LANGUAGE}/audio`)) {
     fs.mkdirSync(`${PROJECT_ROOT}/${LANGUAGE}/audio`);
 }
 
+if (!fs.existsSync(`${PROJECT_ROOT}/${LANGUAGE}/audios`)) {
+    fs.mkdirSync(`${PROJECT_ROOT}/${LANGUAGE}/audios`);
+}
+
 if (!fs.existsSync(`${PROJECT_ROOT}/${LANGUAGE}/videos`)) {
     fs.mkdirSync(`${PROJECT_ROOT}/${LANGUAGE}/videos`);
 }
@@ -30,3 +34,4 @@ if (!fs.existsSync(`${PROJECT_ROOT}/${LANGUAGE}/merge`)) {
 if (!fs.existsSync(`${PROJECT_ROOT}/${LANGUAGE}/background`)) {
     fs.mkdirSync(`${PROJECT_ROOT}/${LANGUAGE}/background`);
 }
+
