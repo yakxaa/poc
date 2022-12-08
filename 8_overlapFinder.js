@@ -1,6 +1,5 @@
-import { readFileSync } from 'fs';
+import { readFileSync, writeFile } from 'fs';
 import { resolve } from 'path';
-import fs from 'fs';
 import { exec } from 'child_process';
 import * as dotenv from 'dotenv'
 dotenv.config()
@@ -48,7 +47,7 @@ for (let i = 0; i < outputData.length; i++) {
     // else there is no overlap
     console.log(start + duration, end);
     if (start + duration > end) {
-        // check overlap percentage and add to overlap array
+        // check overlap percentage and add overlap array
         let overlapPercentage = (end - start) / duration;
         if (overlapPercentage > 0.80) {
             overlap["Audios"].push({
@@ -84,7 +83,7 @@ for (let i = 0; i < outputData.length; i++) {
     }
 }
 
-fs.writeFile(`${PROJECT_ROOT}/${LANGUAGE}/overlap.json`, JSON.stringify(overlap), function (err) {
+writeFile(`${PROJECT_ROOT}/${LANGUAGE}/overlap.json`, JSON.stringify(overlap), function (err) {
     if (err) {
         return console.log(err);
     }
