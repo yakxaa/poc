@@ -1,3 +1,5 @@
+import { exec } from 'child_process';
+
 export let execShellCommand = async (cmd) => {
     console.log(cmd)
     return new Promise((resolve, reject) => {

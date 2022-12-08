@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import * as dotenv from 'dotenv'
-import { execShellCommand } from './shellCommandExecute'
+import { execShellCommand } from './shellCommandExecute.js'
 
 dotenv.config()
 

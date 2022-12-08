@@ -1,10 +1,9 @@
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
-import { exec } from 'child_process';
 import * as dotenv from 'dotenv'
 import { changeAudioLength, changeVideoLength } from './modules/changeAudioVideo.js'
 import { cutAudioVideo } from './modules/cutAudioVideo.js'
-import { execShellCommand } from './shellCommandExecute'
+import { execShellCommand } from './modules/shellCommandExecute.js'
 
 dotenv.config()
 

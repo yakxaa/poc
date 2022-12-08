@@ -39,7 +39,6 @@ async function getOutput() {
         let text = output[i].sentence;
         let translatedText = await translate(text);
         output[i].translated_sentence = translatedText;
-
     }
 }
 

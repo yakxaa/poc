@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import { renameSync } from 'fs';
 import * as dotenv from 'dotenv'
-import { execShellCommand } from './shellCommandExecute'
+import { execShellCommand } from './shellCommandExecute.js'
 dotenv.config()
 
 const PROJECT_NAME = process.env.PROJECT_NAME
