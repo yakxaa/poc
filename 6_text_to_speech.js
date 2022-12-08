@@ -1,20 +1,23 @@
 import fs from "fs";
 import { resolve } from 'path';
 import fetch from "node-fetch";
+import * as dotenv from 'dotenv'
+dotenv.config()
 
-const API_KEY = "AIzaSyDFKmWu6FuGMwwbrWv2OOph0IxIEfzNWVo";
+const PROJECT_NAME = process.env.PROJECT_NAME
+const LANGUAGE = process.env.LANGUAGE;
+
+
+const API_KEY = process.env.API_KEY;
 
 const url = "https://texttospeech.googleapis.com";
 
 const query = "/v1/text:synthesize?key=" + API_KEY;
 
-
-const PROJECT_NAME = 'inanutsshell';
-
 const __dirname = resolve();
 const PROJECT_ROOT = resolve(__dirname, `../${PROJECT_NAME}`);
 
-const json = fs.readFileSync(resolve(PROJECT_ROOT, 'translated_marathi.json'));
+const json = fs.readFileSync(resolve(PROJECT_ROOT, LANGUAGE, 'translated.json'));
 const data = JSON.parse(json);
 
 function pad(s) {
@@ -38,8 +41,8 @@ for (let i = 0; i < data.length; i++) {
 			text: data[i].translated_sentence,
 		},
 		voice: {
-			languageCode: "mr-IN",
-			name: "mr-IN-" + Voices[data[i].speaker],
+			languageCode: LANGUAGE,
+			name: LANGUAGE + "-" + Voices[data[i].speaker],
 		},
 		audioConfig: {
 			audioEncoding: "LINEAR16",
@@ -53,7 +56,7 @@ for (let i = 0; i < data.length; i++) {
 		.then((res) => res.json())
 		.then((res) => {
 			// Convert audio content string to audio file
-			fs.writeFile(resolve(PROJECT_ROOT, `audios/${pad(i.toString())}_${data[i].start_time}.mp3`), res.audioContent, "base64", (err) => {
+			fs.writeFile(resolve(PROJECT_ROOT, LANGUAGE, `audios/${pad(i.toString())}_${data[i].start_time}.mp3`), res.audioContent, "base64", (err) => {
 				if (err) {
 					console.log(err);
 				}

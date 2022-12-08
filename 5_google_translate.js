@@ -2,10 +2,13 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import fs from 'fs';
 import fetch from "node-fetch";
+import * as dotenv from 'dotenv'
+dotenv.config()
 
-const API_KEY = "AIzaSyAyLSoZRIOziPF3l6WzzwqBgE5PlRY8n-s";
+const PROJECT_NAME = process.env.PROJECT_NAME
+const LANGUAGE = process.env.LANGUAGE;
+const API_KEY = process.env.API_KEY;
 
-const PROJECT_NAME = 'inanutsshell';
 
 const __dirname = resolve();
 const PROJECT_ROOT = resolve(__dirname, `../${PROJECT_NAME}`);
@@ -16,9 +19,12 @@ const data = JSON.parse(json);
 
 let output = data
 
+// split language code from language name
+let target = LANGUAGE.split("-")[0];
+let country = LANGUAGE.split("-")[1];
 
 async function translate(text) {
-    return await fetch(`https://translation.googleapis.com/language/translate/v2?key=${API_KEY}&q=${text}&target=mr&source=en`,
+    return await fetch(`https://translation.googleapis.com/language/translate/v2?key=${API_KEY}&q=${text}&target=${target}&source=en`,
         {
             method: 'GET',
         }).then(res => res.json()).then((res) => {
@@ -39,7 +45,7 @@ async function getOutput() {
 
 await getOutput().then(() => {
     // Store output in json
-    fs.writeFile(`${PROJECT_ROOT}/translated_marathi.json`, JSON.stringify(output), function (err) {
+    fs.writeFile(`${PROJECT_ROOT}/${LANGUAGE}/translated.json`, JSON.stringify(output), function (err) {
         if (err) {
             return console.log(err);
         }

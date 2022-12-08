@@ -1,7 +1,10 @@
 import { exec } from 'child_process';
 import { resolve } from 'path';
+import * as dotenv from 'dotenv'
+dotenv.config()
 
-const PROJECT_NAME = 'inanutsshell';
+const PROJECT_NAME = process.env.PROJECT_NAME
+
 
 const __dirname = resolve();
 const PROJECT_ROOT = resolve(__dirname, `../${PROJECT_NAME}`);

@@ -1,8 +1,10 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import fs from 'fs';
+import * as dotenv from 'dotenv'
+dotenv.config()
 
-const PROJECT_NAME = 'inanutsshell';
+const PROJECT_NAME = process.env.PROJECT_NAME
 
 const __dirname = resolve();
 const PROJECT_ROOT = resolve(__dirname, `../${PROJECT_NAME}`);

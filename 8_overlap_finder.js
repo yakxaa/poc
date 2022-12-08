@@ -2,16 +2,18 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import fs from 'fs';
 import { exec } from 'child_process';
+import * as dotenv from 'dotenv'
+dotenv.config()
 
-const PROJECT_NAME = 'inanutsshell';
-
+const PROJECT_NAME = process.env.PROJECT_NAME
 const __dirname = resolve();
 const PROJECT_ROOT = resolve(__dirname, `../${PROJECT_NAME}`);
+const LANGUAGE = process.env.LANGUAGE;
 
-const audioLengths = readFileSync(resolve(PROJECT_ROOT, "audio_lengths.json"));
+const audioLengths = readFileSync(resolve(PROJECT_ROOT, LANGUAGE, "audio_lengths.json"));
 const audioLengthsData = JSON.parse(audioLengths);
 
-const output = readFileSync(resolve(PROJECT_ROOT, "translated_marathi.json"));
+const output = readFileSync(resolve(PROJECT_ROOT, LANGUAGE, "translated.json"));
 const outputData = JSON.parse(output);
 
 function execShellCommand(cmd) {
@@ -25,7 +27,7 @@ function execShellCommand(cmd) {
     });
 }
 
-const audios = resolve(PROJECT_ROOT, "audios-gcp/");
+const audios = resolve(PROJECT_ROOT, LANGUAGE, "audios/");
 
 
 // const videoLength = await execShellCommand(`ffprobe -i ${audios}/${files[i]} -show_entries format=duration -v quiet -of csv="p = 0"`)
@@ -82,7 +84,7 @@ for (let i = 0; i < outputData.length; i++) {
     }
 }
 
-fs.writeFile(`${PROJECT_ROOT}/overlap.json`, JSON.stringify(overlap), function (err) {
+fs.writeFile(`${PROJECT_ROOT}/${LANGUAGE}/overlap.json`, JSON.stringify(overlap), function (err) {
     if (err) {
         return console.log(err);
     }

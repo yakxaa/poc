@@ -1,13 +1,17 @@
 import { resolve } from 'path';
 import fs from 'fs';
 import { exec } from 'child_process';
+import * as dotenv from 'dotenv'
+dotenv.config()
 
-const PROJECT_NAME = 'inanutsshell';
+const PROJECT_NAME = process.env.PROJECT_NAME
 
 const __dirname = resolve();
 const PROJECT_ROOT = resolve(__dirname, `../${PROJECT_NAME}`);
+const LANGUAGE = process.env.LANGUAGE;
 
-const audios = resolve(PROJECT_ROOT, "audios/");
+
+const audios = resolve(PROJECT_ROOT, LANGUAGE, "audios/");
 
 // execute a command in bash
 
@@ -43,7 +47,7 @@ for (let i = 0; i < files.length; i++) {
     });
 };
 
-fs.writeFile(`${PROJECT_ROOT}/audio_lengths.json`, JSON.stringify(audioLengths), function (err) {
+fs.writeFile(`${PROJECT_ROOT}/${LANGUAGE}/audio_lengths.json`, JSON.stringify(audioLengths), function (err) {
     if (err) {
         return console.log(err);
     }
