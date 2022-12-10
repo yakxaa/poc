@@ -46,6 +46,10 @@ for (let i = 0; i < data.length; i++) {
 		},
 		audioConfig: {
 			audioEncoding: "LINEAR16",
+			// speed
+			speakingRate: process.env.SPEAKING_RATE,
+			// pitch
+			pitch: process.env.PITCH,
 		},
 	};
 

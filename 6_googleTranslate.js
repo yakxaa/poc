@@ -24,7 +24,7 @@ let target = LANGUAGE.split("-")[0];
 let country = LANGUAGE.split("-")[1];
 
 async function translate(text) {
-    return await fetch(`https://translation.googleapis.com/language/translate/v2?key=${API_KEY}&q=${text}&target=${target}&source=en`,
+    return await fetch(`https://translation.googleapis.com/language/translate/v2?key=${API_KEY}&q=${text}&target=${target}`,
         {
             method: 'GET',
         }).then(res => res.json()).then((res) => {
