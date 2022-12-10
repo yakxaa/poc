@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import fs from 'fs';
-import { exec } from 'child_process';
 import * as dotenv from 'dotenv'
+import { execShellCommand } from './modules/shellCommandExecute.js'
 dotenv.config()
 
 const PROJECT_NAME = process.env.PROJECT_NAME
@@ -22,18 +22,6 @@ const audios = resolve(PROJECT_ROOT, LANGUAGE, "audios/");
 let audioLengths = [];
 
 const files = fs.readdirSync(audios);
-
-function execShellCommand(cmd) {
-    return new Promise((resolve, reject) => {
-        exec(cmd, (error, stdout, stderr) => {
-            if (error) {
-                console.warn(error);
-            }
-            resolve(stdout ? stdout : stderr);
-        });
-    });
-}
-
 
 
 for (let i = 0; i < files.length; i++) {
