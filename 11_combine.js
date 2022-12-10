@@ -33,7 +33,6 @@ let combine = async (overlaps) => {
         i += 1
     }
 
-    i = 0
     for (let overlap of overlaps) {
         overlap["seqNo"] = getSequenceNo(i)
         i += 2
@@ -100,7 +99,7 @@ let combine = async (overlaps) => {
 
 
     // To cut audio video between two video-audio
-    i = 1
+    i = (i % 2 == 0) ? 1 : 2
     for (let j = 0; j < overlaps.length - 1; j++) {
         overlaps[j]["seqNo"] = getSequenceNo(i)
         overlaps[j]["start_time"] = overlaps[j]["end_time"]
